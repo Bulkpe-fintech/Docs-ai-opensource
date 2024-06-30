@@ -1,0 +1,2361 @@
+
+
+
+
+
+
+Generic FAQ
+
+What is Bulkpe?
+
+Bulkpe is a fintech platform that offers a range of financial and payments solutions for businesses, including payouts, pay-ins, virtual accounts, connected banking, account opening, etc.
+
+What services does Bulkpe provide?
+
+Bulkpe provides a payment gateway, payout solutions, current accounts, and a mobile app, web app and intergrations for managing payments.
+
+How can I sign up for Bulkpe?
+
+You can sign up for Bulkpe by visiting our website and filling out the registration form. Once your account is approved, you can start using our services.
+
+Is Bulkpe safe to use?
+
+Yes, Bulkpe takes security very seriously and uses industry-standard encryption and security protocols to protect your data.
+
+What are the fees for using Bulkpe?
+
+Bulkpe's fees vary depending on the services you use. Please refer to our pricing page for more information.
+
+How does Bulkpe handle customer support?
+
+Bulkpe offers customer support through various channels, including email, chat, and phone. Our support team is available to assist you with any questions or issues you may have.
+
+Can I integrate Bulkpe with my existing systems?
+
+Yes, Bulkpe offers APIs that allow you to integrate our services with your existing systems.
+
+What currencies does Bulkpe support?
+
+Bulkpe supports only INR.
+
+Does Bulkpe offer mobile apps?
+
+Yes, Bulkpe offers a mobile app for Android devices, allowing you to manage your finances on the go.
+
+How long does it take to process payments with Bulkpe?
+
+The time it takes to process payments with Bulkpe depends on the payment method and the banks involved. Typically, payments are processed within a few business days.
+
+
+
+API Introduction
+
+The Bulkpe API is organized around REST. Our API has predictable resource-oriented URLs, accepts JSON-encoded request bodies, returns JSON-encoded responses, and uses standard HTTP response codes, authentication, and verbs.
+
+Production Base URL
+
+https://api.bulkpe.in/
+
+Reach out to us at 
+support@bulkpe.in
+ for any support.
+
+Easy navigation
+
+For Payouts product - refer to 
+Bulkpe Payouts
+
+For UPI Collection product - refer to 
+Scale UPI
+
+Authorization
+
+The Bulkpe API uses API keys to authenticate requests. You can view and manage your API keys in the Bulkpe Dashboard.
+
+You can find your token key from your Bulkpe Web Dashboard -> 
+Settings
+ -> API.
+
+How to use the token
+
+You need to pass the API Token in the headers with the key as '
+Authorization
+' and the value as '
+Bearer
+' (prefix) followed by your token.
+
+Example:
+
+Whitelist your IP addresses
+
+We highly recommend you whitelist your IP addresses from the same API 
+settings
+ tab from your Bulkpe Web Dashboard. Bulkpe supports whitelisting multiple IP addresses.
+
+API Key and IP Whitelisting
+
+Production Base URL
+
+https://api.bulkpe.in/
+
+
+
+Adding funds to Virtual Account
+
+Whitelist
+
+If you're adding funds for the first time in Bulkpe, you need to whitelist your existing Bank Account of your company from
+
+Settings
+ -> Whitelist -> Add Account -> Input Account Holder Name, Account Number, and IFSC - > Submit.
+
+Bank Account Whitelist Screen
+
+Bulkpe may take up to 4 working hours to approve your request. You may reach out to support@bulkpe.in to speed up the process. Upon approval from Bulkpe, you can proceed to add funds via IMPS, NEFT, or RTGS.
+
+Adding Funds
+
+Once your Bank Accounts are whitelisted, you can add funds to your Bulkpe Wallet, and start by locating your Virtual Account Number and IFSC on your dashboard.
+
+Bulkpe Virtual Account Number in the top right
+
+
+
+Please note
+
+Transferring funds using TPAPs (Phonepe/Google Pay) will fail as TPAPs use the UPI method to transfer funds. Bulkpe Virtual Accounts only supports IMPS, RTGS, and NEFT payment methods via Banking Portals (Net Banking or Direct Bank Apps).
+
+
+
+Key things to handle
+
+Timestamp handling
+
+In the Bulkpe API, timestamps are managed and stored in Coordinated Universal Time (
+UTC
+). To convert these timestamps to Indian Standard Time (IST), you can simply add UTC + 5:30. This ensures accurate and consistent time representation for your data.
+
+
+
+Transaction states
+
+Understanding the states of a transaction is crucial for effective management. In the Bulkpe API, transactions can be in the following states:
+
+For detailed information on transaction states, refer to the description provided in the API response or callback, accessible through the "message" parameter.
+
+
+
+
+
+Bulkpe Payouts
+
+Use Bulkpe Payouts APIs to make payouts from your Virtual Account to any Indian Bank Account or UPI VPA.
+
+Once a payout is initiated using 
+Initiate Payout API
+, Bulkpe system and bank process it. You will receive a callback from the Bulkpe system (
+setup callback
+) with the status of the Payout. You can also call the 
+Fetch Transaction Status
+ API to get the payout status.
+
+Learn how to 
+add funds to your Virtual Account
+ before initiating payouts. Virtual Accounts are used to hold funds and debit the Payout Amount + Bulkpe Charges.
+
+Flow diagram
+
+Adding funds to Bulkpe Virtual Account -> Making a Payout -> Getting Payout Status
+
+
+
+Initiate Payout
+
+Use this API to initiate an amount transfer from your Bulkpe Virtual Account to a beneficiary bank account or UPI VPA.
+
+Once a payout is initiated and the Bulkpe system and bank process it, you will receive a callback from the Bulkpe system (
+setup callback
+) with the status of the Payout. You can also call the 
+Fetch Transaction Status
+ API to get the payout status.
+
+Request
+
+API URL: 
+https://api.bulkpe.in/client/initiatepayout
+
+Method: 
+POST
+
+Auth: Please refer to the 
+Authorization page
+.
+
+Body
+
+{
+    "amount": 1,
+    "account_number": "77220101845051", //beneficiary
+    "payment_mode": "UPI", //IMPS, RTGS, UPI, NEFT are allowed
+    "reference_id": "xxxxx-test6", //unique id
+    "transcation_note": "Refund03", //optional
+    "beneficiaryName": "xxxxx",
+    "ifsc": "FDRL0007777",
+    "upi": "aintworried@axl" //conditional - only for UPI
+}
+
+Response
+
+{
+      "status": true,
+      "statusCode": 200,
+      "data": {
+        "beneCode": "APIBENEF453",
+        "beneName": "name",
+        "beneAccNum": "77220101845051",
+        "beneIfscCode": "FDRL0007777",
+        "beneAcType": 10,
+        "transcation_id": "TRAREF000453",
+        "amount": 1,
+        "payment_remark": "From Peid Piper using Bulkpe - Refund03",
+        "payment_mode": "IMPS",
+        "status": "PENDING",
+        "message": "Transcation Initiated!"
+      },
+      "message": "Transcation Processing"
+    }
+
+Previous
+Bulkpe Payouts
+Next
+Fetch Balance
+
+
+
+
+
+Fetch Balance
+
+Use this API to get your account balance. Available balance is account balance minus sum of all pending payouts.
+
+Request
+
+API URL: 
+https://api.bulkpe.in/client/fetchBalance
+
+Method: 
+GET
+
+Auth: Please refer to the 
+Authorization page
+.
+
+Body: None
+
+Response
+
+{
+    "status": true,
+    "statusCode": 200,
+    "data": {
+        "firstName": "xxxx",
+        "lastName": "xxxx",
+        "businessName": "business",
+        "businessAddress": "business",
+        "phone": "9684458448",
+        "account_number": "7722771001",
+        "ifsc_code": "UTIB0CCH274",
+        "VirtualAccount": "",
+        "VirtualAccountBank": "Axis",
+        "virtualAccountId": "",
+        "Balance": 434.90,
+        "email": "xxxxxxxx@email.com",
+        "poApiPenny": 1,
+        "poAppPenny": 1
+    },
+    "message": ""
+}
+
+
+
+
+
+Fetch Transaction Status
+
+Use this API to get status of any transaction.
+
+Request
+
+API URL: 
+https://api.bulkpe.in/client/fetchStatus
+
+Method: 
+POST
+
+Auth: Please refer to the 
+Authorization page
+.
+
+Body
+
+{
+    "transcation_id":"TRAREF0002211613" //use Bulkpe Transaction ID or
+    "reference_id": "572D2024030805141585328zMxCZI" //use your internal reference ID
+}
+
+//only one input is accepted.
+
+Response
+
+{
+    "status": true,
+    "statusCode": 200,
+    "data": {
+        "transcation_id": "TRAREF000624",
+        "beneficiaryName": "xxxx ",
+        "account_number": "50100301022325676",
+        "ifsc": "HDFC0000683",
+        "amount": 1,
+        "payment_mode": "",
+        "payment_remark": "From xxxx using Bulkpe",
+        "status": "SUCCESS",
+        "utr": "",
+        "holderName": "xxxxx ",
+        "type": "Debit",
+        "settelment_amount": "1.00",
+        "closing_balance": "436.90",
+        "createdAt": "2022-07-20T08:59:09.744Z",
+        "updatedAt": "2022-07-20T08:59:09.744Z"
+    },
+    "message": ""
+}
+
+You can refer to this 
+page
+ to understand handling different states of transaction 
+status
+
+
+
+
+
+Get Statement
+
+Use this API to get your Bulkpe account transaction statement.
+
+Request
+
+API URL: 
+https://api.bulkpe.in/client/accountStatement
+
+Method: 
+POST
+
+Auth: Please refer to the 
+Authorization page
+.
+
+Body
+
+{
+    "page": 2,
+    "limit": 50
+}
+
+Response
+
+{
+    "status": true,
+    "statusCode": 200,
+    "data": [
+        {
+            "transcation_id": "TRARE0TESTDEV00308",
+            "reference_id": "TNX001",
+            "beneficiaryName": "name",
+            "amount": 1,
+            "payment_mode": "IMPS",
+            "payment_remark": "monthly payment",
+            "statusDescription": "Credited to beneficiary xxxx on 28-06-2022 22:40:16",
+            "status": "SUCCESS",
+            "createdAt": "2022-06-28T17:10:13.269Z",
+            "updatedAt": "2022-06-28T17:12:01.397Z"
+        }       
+    ],
+    "message": "",
+    "total": 1
+}
+
+Previous
+Fetch Transaction Status
+Next
+Connected Account Statement
+
+
+
+
+
+Connected Account Statement
+
+This API is only applicable to Connected Bank Accounts. Bulkpe Virtual Account users will not get a successful response. For VA users please use 
+Get Statement API
+.
+
+Request
+
+API URL: 
+https://api.bulkpe.in/client/connectedAccountStatement
+
+Method: 
+POST
+
+Auth: Please refer to the 
+Authorization page
+.
+
+☝️
+
+Note
+
+This API triggers your partner bank to send your bank account statement directly to your email. Please note that the processing time for your request may increase based on the amount of data requested (such as the number of days or transactions in the statement).
+
+Body
+
+{
+    "fromDate": "21/08/2022",
+    "toDate": "31/08/2022",
+    "email": "contact@bulkpe.in", //to which the statement file will be sent
+    "type": "1" //1 for csv and 2 for pdf file output via email
+}
+
+Response
+
+{
+    "status": true,
+    "statusCode": 200,
+    "data": {},
+    "message": "Request sent to bank successfully, you will receive a file as it gets processed"
+}
+
+
+
+
+
+
+
+Sub Virtual Accounts
+
+Sub Virtual Accounts are virtual accounts under a Master virtual account of Bulkpe User.
+
+These Sub VAs can be used for payment collection and payout purposes.
+
+To get Sub VA feature enabled for your Bulkpe Account, please reach out to us at support@bulkpe.in
+
+Flow diagram
+
+Sub Virtual Account for collection and payouts
+
+
+
+Create Sub VA
+
+Use this API to create a sub-virtual account with UPI and funding accounts whitelisted.
+
+Request
+
+API URL: 
+https://api.bulkpe.in/client/createSubVa
+
+Method: 
+POST
+
+Auth: Please refer to the 
+Authorization page
+.
+
+Body
+
+{
+    "name": "xxxxxxx",
+    "settle_to": "SELF", //SELF (collected money will remain in sub VA) or PARENT (Will settle to Master VA)
+    "upi": "xxxx",
+    "udf1": "xxxx xxxx", //optional
+    "udf2": "", //optional
+    "udf3": "", //optional
+    "reference_id": "Ref-45f83cb4-25e7-420f-86af-98d5ce39d3e1",
+    "isWhitelistAccount": true, 
+    "WhitelistAccount": [
+        {
+            "name": "xxxxx",
+            "accountNumber": "62849068232345",
+            "ifsc": "IDIB000M222"
+        }
+    ]
+}
+
+Response
+
+{
+    "status": true,
+    "statusCode": 200,
+    "data": {
+        "vaId": "SVA0022913",
+        "name": "xxxx xxxx",
+        "accounts": [
+            {
+                "account_number": "77220023013",
+                "ifscCode": "UTIB0CCH274",
+                "upi": "xxxxx@axisbank"
+            }
+        ],
+        "createdVia": "API",
+        "reference_id": "Ref-45f83cb4-25e7-420f-86af-98d5ce39d3e1",
+        "udf1": "xxxx xxxx",
+        "udf2": "",
+        "udf3": "",
+        "createdAt": "2023-11-16T14:52:16.865Z",
+        "updatedAt": "2023-11-16T14:52:16.865Z"
+    },
+    "message": "Created Sucessfully!"
+}
+
+Previous
+Sub Virtual Accounts
+Next
+Fetch Sub VA
+
+
+
+
+
+Fetch Sub VA
+
+Use this API to get a sub-virtual account details.
+
+Request
+
+API URL: 
+https://api.bulkpe.in/client/fetchSubVa
+
+Method: 
+POST
+
+Auth: Please refer to the 
+Authorization page
+.
+
+Body
+
+{
+    "vaId": "SVA0022906"
+}
+
+Response
+
+{
+    "status": true,
+    "statusCode": 200,
+    "data": {
+        "vaId": "SVA0022906",
+        "name": "xxxxx",
+        "reference_id": "Ref-a454f804-079d-4783-bf7b-c284a745fb0f",
+        "settle_to": "SELF",
+        "accounts": [
+            {
+                "account_number": "77220023006",
+                "ifscCode": "UTIB0CCH274",
+                "upi": ""
+            }
+        ],
+        "Balance": 1,
+        "udf1": "va",
+        "udf2": "Hey",
+        "udf3": "",
+        "isWhitelistAccount": true,
+        "WhitelistAccounts": [
+            {
+                "referns": "",
+                "name": "xxxxx",
+                "accountNumber": "62849024246845",
+                "ifscCode": "IDIB000M100",
+                "isEnabled": true,
+                "status": 1,
+                "createdAt": "2023-11-11T04:00:27.356Z",
+                "updatedAt": "2023-11-11T04:00:27.356Z",
+                "swhId": 2,
+                "__v": 0
+            }
+        ],
+        "yetToSettle": 0,
+        "status": "ACTIVE",
+        "createdAt": "2023-11-11T04:00:27.331Z",
+        "updatedAt": "2023-11-11T04:21:25.754Z"
+    },
+    "message": "Data Found!"
+}
+
+Previous
+Create Sub VA
+Next
+Deactivate Sub VA
+
+
+
+
+
+Deactivate Sub VA
+
+Use this API to deactivate a sub-virtual account.
+
+Request
+
+API URL: 
+https://api.bulkpe.in/client/disableVa
+
+Method: 
+POST
+
+Auth: Please refer to the 
+Authorization page
+.
+
+Body
+
+{
+    "vaId": "TESVA0041"
+}
+
+Response
+
+{
+    "status": true,
+    "statusCode": 200,
+    "data": {},
+    "message": "Sub-Virtual Account Disabled!"
+
+
+
+
+
+Activate Sub VA
+
+Use this API to activate a sub-virtual account.
+
+Request
+
+API URL: 
+https://api.bulkpe.in/client/enableVa
+
+Method: 
+POST
+
+Auth: Please refer to the 
+Authorization page
+.
+
+Body
+
+{
+    "vaId": "SVA0013851"
+}
+
+Response
+
+{
+    "status": true,
+    "statusCode": 200,
+    "data": {
+        "vaId": "SVA0013851",
+        "name": "xxxxx - 813e63de-4511-4fc4-9d7c-cc7b11d41265",
+        "accounts": [
+            {
+                "account_number": "7722773313951",
+                "ifscCode": "UTIB0CCH274",
+                "upi": ""
+            }
+        ],
+        "sWhitelistAccount": false,
+        "createdVia": "API",
+        "reference_id": "Ref-81ebadb6-0804-43f8-aa61-a55deb8514f6",
+        "udf1": "hello world",
+        "udf2": "",
+        "udf3": "",
+        "createdAt": "2023-03-29T10:24:06.120Z",
+        "updatedAt": "2023-11-16T15:04:13.145Z"
+    },
+    "message": "Sub-Virtual Account is activated, please find your account number, IFSC and VPA"
+}
+
+Previous
+Deactivate Sub VA
+Next
+Payout from Sub VA
+
+
+
+
+
+Payout from Sub VA
+
+Use this API to make a payout from a sub-virtual account. Post the payout initiated and then processed, you will receive a callback from our system (
+setup callback
+) with the status of the Payout or you can call the 
+Fetch Transaction Status
+ API to get the payout status.
+
+Request
+
+API URL: 
+https://api.bulkpe.in/client/initiateSubVaPayout
+
+Method: 
+POST
+
+Auth: Please refer to the 
+Authorization page
+.
+
+Body
+
+{
+    "amount": 1,
+    "account_number": "7722771002",
+    "payment_mode": "IMPS", //IMPS, UPI, RTGS, NEFT allowed
+    "reference_id": "TNX00121", //unqiue ID
+    "transcation_note": "test", //optional
+    "beneficiaryName": "xxxxx",
+    "ifsc": "UTIB0CCH274",
+    "vaId": "TESVA0040" //from which the debit should happen
+    "upi": "aintworried@axl" //conditional based on payment_mode (only for UPI)
+}
+
+Response
+
+{
+    "status": true,
+    "statusCode": 200,
+    "data": {
+        "beneCode": "APIBENEF3164909",
+        "beneName": "xxxxx",
+        "beneAccNum": "7722771002",
+        "beneIfscCode": "UTIB0CCH274",
+        "beneAcType": 10,
+        "transcation_id": "TRAREF0003164908",
+        "amount": 1,
+        "payment_remark": "test",
+        "payment_mode": "UPI",
+        "status": "PENDING",
+        "vaId": "SVA003",
+        "message": "Transaction Initiated!"
+    },
+    "message": "Transcation Processing"
+}
+
+Previous
+Activate Sub VA
+Next
+Update Sub VA
+
+
+
+
+
+Update Sub VA
+
+Use this API to update an existing sub-virtual account.
+
+Request
+
+API URL: 
+https://api.bulkpe.in/client/updateSubVA
+
+Method: 
+POST
+
+Auth: Please refer to the 
+Authorization page
+.
+
+Body
+
+{
+    "vaId": "SVA0022906",
+    "settle_to": "PARENT",
+    "name": "xxxxx",
+    "udf1": "va",
+    "udf2": "Hey",
+    "udf3": "",
+    "reference_id": "Ref-2424242",
+    "isWhitelistAccount": true,
+    "WhitelistAccount": [
+        {
+            "name": "xxxxx",
+            "accountNumber": "62849dsdf06845",
+            "ifsc": "IDIB000M100"
+        }
+    ]
+}
+
+Response
+
+{
+    "status": true,
+    "statusCode": 200,
+    "data": {},
+    "message": "Update Sucessfully!"
+}
+
+Previous
+Payout from Sub VA
+Next
+List Sub-VAs
+
+List Sub-VAs
+
+Use this API to get the list of sub-virtual accounts created.
+
+Request
+
+API URL: 
+https://api.bulkpe.in/client/fetchAllSubVa
+
+Method: 
+POST
+
+Auth: Please refer to the 
+Authorization page
+.
+
+Body
+
+{
+    "page": 1,
+    "limit": 20
+}
+
+Response
+
+{
+    "status": true,
+    "statusCode": 200,
+    "data": [
+        {
+            "vaId": "SVA002",
+            "name": "xxxxx VA1",
+            "reference_id": "ref1",
+            "settle_to": "SELF",
+            "accounts": [
+                {
+                    "account_number": "77227733102",
+                    "ifscCode": "UTIB0CCH274",
+                    "upi": ""
+                }
+            ],
+            "Balance": 1,
+            "udf1": "hello world",
+            "udf2": "",
+            "udf3": "",
+            "isWhitelistAccount": false,
+            "status": "ACTIVE",
+            "yetToSettle": 0,
+            "createdAt": "2022-08-24T18:26:48.577Z",
+            "updatedAt": "2022-08-24T21:12:54.876Z"
+        },
+        {
+            "vaId": "SVA003",
+            "name": "xxxx VA",
+            "reference_id": "ref2",
+            "settle_to": "SELF",
+            "accounts": [
+                {
+                    "account_number": "77227733103",
+                    "ifscCode": "UTIB0CCH274",
+                    "upi": ""
+                }
+            ],
+            "Balance": 1,
+            "udf1": "va",
+            "udf2": "Hey",
+            "udf3": "",
+            "isWhitelistAccount": false,
+            "status": "ACTIVE",
+            "yetToSettle": 0,
+            "createdAt": "2022-08-24T18:35:19.735Z",
+            "updatedAt": "2022-08-24T21:11:58.531Z"
+        }
+ ],
+    "message": "Data Found!",
+    "total": 2
+}
+
+Previous
+Update Sub VA
+Next
+Webhooks
+
+
+
+
+
+Webhooks
+
+You can configure webhook endpoints via the Bulkpe Web Dashboard to be notified about events that happen in your Bulkpe account or connected Bank accounts.
+
+Navigate to your Bulkpe Web Dashboard -> 
+Settings
+ -> Webhooks to do the same.
+
+In the Bulkpe system, we manage webhooks through three distinct types:
+
+1. 
+Debit
+: This type provides callbacks for all payout scenarios, encompassing virtual accounts and sub-virtual accounts. It covers both successful and failed transactions.
+2. 
+Credit
+: This type facilitates callbacks for all pay-ins, whether directed to your virtual account, sub-virtual account, or collected through payment gateways.
+3. 
+Bank Verification
+: This type of webhook generates callbacks for various verification APIs, including 
+penny drop
+, 
+reverse penny drop
+, and other non-sync verification processes.
+
+Our webhook system ensures comprehensive coverage and timely notifications across diverse transaction types. Feel free to explore and integrate these functionalities into your system seamlessly.
+
+
+
+
+
+Debit Webhook
+
+This callback will be triggered when funds are debited from your Bulkpe account. Add your Webhook endpoint from Bulkpe Dashboard -> 
+Settings
+ -> Webhooks.
+
+Sample Debit Webhook
+
+{
+  "status": true,
+  "statusCode": 200,
+  "data": {
+    "reference_id": "TNX00177",
+    "transcation_id": "TETRAREF00012368",
+    "trx_status": "SUCCESS",
+    "account_holder_name": "",
+    "trx_message": "Success",
+    "beneficiaryName": "xxxxx",
+    "account_number": "aintworried@axl",
+    "ifsc": "",
+    "amount": 1,
+    "payment_mode": "UPI",
+    "utr": "325855096923",
+    "type": "Debit",
+    "isVirtualAccount": false,
+    "SubVaId": "",
+    "vaName": "",
+    "SubVaAccountNumber": "",
+    "createdAt": "2023-09-15T13:19:24.702Z",
+    "updatedAt": "2023-09-15T13:19:32+00:00"
+  },
+  "message": ""
+}
+
+Previous
+Webhooks
+Next
+Credit Webhook
+
+
+
+
+
+Credit Webhook
+
+This callback will be triggered when funds are credited from your Bulkpe account. Add your Webhook endpoint from Bulkpe Dashboard -> 
+Settings
+ -> Webhooks.
+
+Sample Credit Webhook
+
+{
+  "status": true,
+  "statusCode": 200,
+  "data": {
+    "transcation_id": "TRAREF0002463822",
+    "trx_status": "SUCCESS",
+    "remiter_name": "xxxxxx",
+    "remiter_account_number": "77770101XXXXX",
+    "remiter_ifsc": "UTIB0000131",
+    "amount": 1,
+    "closing_balance": "36.75",
+    "type": "Credit",
+    "utr": "325913544809",
+    "payment_mode": "IMPS",
+    "payment_remark": "",
+    "isVirtualAccount": false,
+    "SubVaId": "",
+    "vaName": "",
+    "SubVaAccountNumber": "",
+    "createdAt": "2023-09-16T08:28:18.509Z"
+  },
+  "message": ""
+}
+
+Previous
+Debit Webhook
+Next
+Verification Webhook
+
+
+
+
+
+Verification Webhook
+
+This callback will be triggered when 
+Bank Verification API
+ or 
+VPA Verification API
+ is called from your Bulkpe account. Add your Webhook endpoint from Bulkpe Dashboard -> 
+Settings
+ -> Webhooks.
+
+Sample Webhook
+
+{
+  "status": true,
+  "statusCode": 200,
+  "data": {
+    "reference_id": "",
+    "transcation_id": "TRAREF0002310805",
+    "trx_status": "SUCCESS",
+    "account_holder_name": "xxxxx xxxxx",
+    "trx_message": "Credited to beneficiary xxxxx xxxxx on 29-08-2023 23:55:21",
+    "beneficiaryName": "BulkpePenny2310806",
+    "account_number": "287284672424",
+    "ifsc": "FDRL0002XXX",
+    "amount": 1,
+    "payment_mode": "IMPS",
+    "utr": "3241XX898XX1",
+    "type": "Debit",
+    "isVirtualAccount": false,
+    "SubVaId": "",
+    "vaName": "",
+    "SubVaAccountNumber": "",
+    "createdAt": "2023-08-29T18:25:18.856Z",
+    "updatedAt": "2023-08-29T18:25:31+00:00"
+  },
+  "message": ""
+}
+
+Previous
+Credit Webhook
+Next
+Scale UPI Callback
+
+
+
+
+
+Scale UPI Callback
+
+Collection and refund status callbacks of Scale UPI APIs will be notified via this webhook.
+
+To configure, log on to your Bulkpe Web App -> Settings -> Webhooks -> UPI.
+
+Setup Webhook (callback) URL
+
+Sample callback response
+
+{
+  "status": true,
+  "statusCode": 200,
+  "data": {
+    "transaction_id": "TEBPTR0016",
+    "reference_id": "xxxxxTest-1706550855",
+    "order_id": "TEBPOD0015",
+    "account_number": "9378738535",
+    "ifsc": "UTIB0CCH274",
+    "upi": "xxxxx@ybl",
+    "amount": 6,
+    "payment_mode": "UPI",
+    "payment_remark": "",
+    "statusDescription": "Collected Successfully",
+    "status": "SUCCESS", //SUCCESS, FAILED, PENDING
+    "utr": "242424242424",
+    "holderName": "",
+    "type": "Credit",
+    "charge": 0,
+    "gst": 0,
+    "createdAt": "2024-01-29T17:54:41.849Z",
+    "updatedAt": "2024-01-29T17:54:42.455Z"
+  },
+  "message": "",
+  "event": "DYNAMIC_UPI_COLLECTION"
+}p
+
+You can refer to 
+Key things to handle
+ for various states of transaction status.
+
+Previous
+Verification Webhook
+Next
+Scale UPI
+
+
+
+
+
+Scale UPI
+
+Scale UPI is UPI Routing product with multiple banks in the backend enabling Bulkpe Users to scale their payment collection using different banking partners.
+
+Flow
+
+UPI Collection Flow
+
+API Flow
+
+1. Create a static or dynamic VPA - please refer to 
+Static VPA Creation
+ and 
+Dynamic VPA Creation
+. 
+2. Use the UPI string in your app to collect payment from the end-user.
+3. Receive a callback with the status of the UPI Collection - refer to callback 
+setup and sample
+ from here.
+4. If you like to retrieve/query/list the statuses of a payment collection, you can use Query API - Please refer to 
+Query Transaction API
+ from here.
+5. Get the collected monies settled to your company bank account.
+
+Please feel free to write us at 
+support@bulkpe.in
+ for any queries.
+
+Previous
+Scale UPI Callback
+Next
+Create Static VPA
+
+
+
+
+
+Create Static VPA
+
+Use this API to create a static UPI VPA which can be further converted into QR. You can use this product for collecting payments offline or online from your customers.
+
+Flow: Create a static VPA -> convert it into a QR for offline collection, use it as a link for online collection -> receive webhook from Bulkpe about the collection status.
+
+Set up Webhook from Bulkpe Web App - 
+learn more
+.
+
+Request
+
+API URL: 
+https://api.bulkpe.in/client/createStaticVpa
+
+Method: 
+POST
+
+Auth: Please refer to the 
+Authorization page
+.
+
+Body
+
+{
+    "name": "xxxxx xxxxx",
+    "reference_id": "tabsVsSpaces1"
+}
+
+Response
+
+{
+    "status": true,
+    "statusCode": 200,
+    "data": {
+        "reference_id": "tabsVsSpaces1",
+        "transaction_id": "BPVA11111",
+        "account_number": "00099920240125022925",
+        "ifscCode": "YESB0CMSNOC",
+        "upi": "bulkpeupi@yesbank"
+    },
+    "message": ""
+}
+
+Previous
+Scale UPI
+Next
+Create Dynamic VPA
+
+
+
+
+
+Create Dynamic VPA
+
+Use this API to create a dynamic UPI VPA which can be further converted into QR or UPI intent. You can use this product for collecting payments offline or online from your customers.
+
+Flow: Create a dynamic VPA -> convert it into a QR for offline collection, use it as a link for online collection -> receive webhook from Bulkpe about the collection status.
+
+Set up Webhook from Bulkpe Web App - 
+learn more
+.
+
+Request
+
+API URL: 
+https://api.bulkpe.in/client/createDynamicVpa
+
+Method: 
+POST
+
+Auth: Please refer to the 
+Authorization page
+.
+
+Body
+
+{
+    "reference_id": "test0007", //should be an unique reference ID
+    "amount": 1
+}
+
+Response
+
+{
+    "status": true,
+    "statusCode": 200,
+    "data": {
+        "transcation_id": "BPOD24242",
+        "amount": 1,
+        "reference_id": "test0007",
+        "upi": "upi://pay?pa=2498294829424@yesbank&pn=Bulkpe&am=1&cu=INR&tn=",
+        "status": "SUCCESS"
+    },
+    "message": ""
+}
+
+Previous
+Create Static VPA
+Next
+UPI Collect
+
+
+
+
+
+UPI Collect
+
+Use this API to make a payment collection request to the payer's UPI App. The payer (VPA holder) will receive a notification on their UPI App for making payment.
+
+Flow: Create a Collect request -> user will receive a notification -> user makes a payment -> you will receive a callback from Bulkpe about the collection status.
+
+Set up Webhook (callback) from Bulkpe Web App - 
+learn more
+.
+
+Request
+
+API URL: 
+https://api.bulkpe.in/client/createCollectionRequest
+
+Method: 
+POST
+
+Auth: Please refer to the 
+Authorization page
+.
+
+Body
+
+{
+    "reference_id": "xxxxtest000334222",
+    "amount": 6,
+    "device": "ANDROID",
+    "upi": "xxxxtest@ybl"
+}
+
+Response
+
+{
+    "status": true,
+    "statusCode": 200,
+    "data": {
+        "partnerRef": "xxxxtest000334222",
+        "referance": "BPCA001",
+        "upi": "xxxxtest@ybl",
+        "status": "PENDING"
+    },
+    "message": "Collect request sent to UPI App"
+}
+
+Previous
+Create Dynamic VPA
+Next
+Query or List Transactions
+
+
+
+Query or List Transactions
+
+Use this API to query using different methods or parameters for Scale UPI - Dynamic QR, Static and UPI Collect APIs.
+
+Request
+
+API URL: 
+https://api.bulkpe.in/client/listAllUpiRoutingTransaction
+
+Method: 
+POST
+
+Auth: Please refer to the 
+Authorization page
+.
+
+Body
+
+Empty query parameter API call will give your response with complete transaction history.
+
+{
+    "from_date": "2024-01-23",
+    "to_date": "2024-01-30",
+    "page": 1,
+    "limit": 10, //count limit per API call
+    "vpa_reference_id": "", // static VPA reference_id
+    "vpa_id": "", // Bulkpe static VPA transaction id
+    "order_id": "", // Bulkpe dynamic VPA order ID
+    "collection_order_id": "", // Bulkpe UPI Collect order ID
+    "transaction_id": "", // Bulkpe transaction id
+    "reference_id": "" // Dynamic VPA or UPI collect reference_id 
+}
+
+Response
+
+{
+    "status": true,
+    "statusCode": 200,
+    "data": [
+        {
+            "transcation_id": "TEBPTR0023",
+            "reference_id": "REF0017",
+            "mode": "UPI_COLLECT",
+            "vpa_reference_id": "",
+            "vpa_id": "",
+            "order_id": "TEBPCA0015",
+            "account_number": "",
+            "ifsc": "",
+            "upi": "",
+            "amount": 6,
+            "payment_mode": "XXXX",
+            "payment_remark": "",
+            "statusDescription": "Collection Failed",
+            "status": "FAILED",
+            "utr": "4030XXXXXXXXX22",
+            "holderName": "",
+            "type": "XXXXXX",
+            "charge": 0,
+            "gst": 0,
+            "createdAt": "2024-01-30T08:14:15.871Z",
+            "updatedAt": "2024-01-30T08:14:16.477Z"
+        },
+
+],
+"message": "XXXXXXXXXX",
+"total": 5
+}
+
+
+
+Refund a Payment
+
+Refund a transaction (Static, Dynamic, UPI Collect) within the same day of collection using this API.
+
+Request
+
+API URL: 
+https://api.bulkpe.in/client/refundVpaTransaction
+
+Method: 
+POST
+
+Auth: Please refer to the 
+Authorization page
+.
+
+Body
+
+{
+    "transaction_id": "BPTR3312", //original collection transaction id
+    "reference_id": "xxxxx-test", //unique reference id for the refund
+    "amount": 2 //partial or full amount
+}
+
+Response
+
+{
+    "status": false,
+    "statusCode": 400,
+    "data": {},
+    "message": ""
+}
+
+Previous
+Query or List Transactions
+Next
+Create UPI Sub Merchant
+
+
+
+
+
+Create UPI Sub Merchant
+
+Use this API to create Sub Merchant with Static QR and Dynamic UPI collection methods. The collected money will be settled directly to your merchant's bank account.
+
+Request
+
+API URL: 
+https://api.bulkpe.in/client/createSubMerchant
+
+Method: 
+POST
+
+Auth: Please refer to the 
+Authorization page
+.
+
+Body
+
+{
+  "name": "Sxxxxx Txxx",
+  "name_on_bank": "Hxxxxx Kxx",
+  "phone": "9092xxxxxx",
+  "reference_id": "Txxx",
+  "businessName": "Txxx",
+  "state": "Tamil Nadu",
+  "nature_of_business": "exports",
+  "business_address": "krishnagiri",
+  "bank_name": "xxxxx payments bank",
+  "bank_branch": "xxxxx",
+  "account_number": "9190xxxxxxx",
+  "account_ifsc": "PYTM0123456",
+  "category_code": "0823",
+  "pan_number": "ERLxxxxxxJ",
+  "business_type_code": "1",
+  "address": "krishnagiri",
+  "city": "xxxxx",
+  "pincode": "xxxxxx",
+  "entity_type": "10"
+}
+
+Response
+
+{
+    "status": true,
+    "statusCode": 200,
+    "data": {},
+    "message": "Created",
+    "result": {
+        "merchantId": "BPSUBVA0015",
+        "reference_id": "Test-1707820105",
+        "kycLink": "https://kyc.bulkpe.in/e371f358354b81e2424cess_key=249989023782782",
+        "name": "xxxxx Test",
+        "phone": "9XXXXX9890"
+    }
+}
+
+The following tables list the possible values and a brief description as to what they stand for various parameters in the sub-merchant creation APIs.
+
+Sub-merchant Creation Codes List
+
+Business type code
+
+Entity type codes
+
+States
+
+Category code
+
+
+
+
+
+
+
+Generate QR for live demo
+
+Generate QR Code
+
+UPI QR Code
+
+UPI ID:Amount:Note:Generate UPI QR Code
+
+Plain Text QR Code
+Text:Generate Plain Text QR Code
+
+
+
+
+
+Bank Verification
+
+Use this API to drop a penny to get the bank account holder's name as per bank. Please note that this is not a synchronous API. After calling this API, you can retrieve the account holder's name through two methods: via a Fetch Status API call or through a callback. Learn more about the Fetch Status API  from 
+here
+ and configure your callback URL 
+here
+.
+
+Request
+
+API URL: 
+https://api.bulkpe.in/client/bankVerification
+
+Method: 
+POST
+
+Auth: Please refer to the 
+Authorization page
+.
+
+Body
+
+{
+    "account_number": "922020029892326",
+    "ifsc": "UTIB0000006",
+    "reference_id": "324257"
+}
+
+Response
+
+{
+    "status": true,
+    "statusCode": 200,
+    "data": {
+        "beneCode": "TEAPIBENEF654",
+        "beneName": "BulkpePenny654",
+        "beneAccNum": "50100301025676",
+        "beneIfscCode": "HDFC000068",
+        "beneAcType": 10,
+        "transcation_id": "TETRAREF000653",
+        "reference_id": "",
+        "amount": 1,
+        "payment_remark": "From name using Bulkpe",
+        "payment_mode": "IMPS",
+        "status": "FAILED",
+        "message": "Insufficient Balance"
+    },
+    "message": "Transcation Processing"
+}
+
+Previous
+Verification Stack
+Next
+Bank Verification Sync
+
+
+
+
+
+Bank Verification Sync
+
+Use this API to drop a penny to get the account holder's name. The key distinction from the 
+Bank Verification API
+ is SYNC. In this API, the account holder's name is included in the response, while for the other, you'll need to call the status API to obtain the account holder's name.
+
+Request
+
+API URL: 
+https://api.bulkpe.in/client/bankVerificationSync
+
+Method: 
+POST
+
+Auth: Please refer to the 
+Authorization page
+.
+
+Body
+
+{
+    "reference_id": "TEST122332", //unique id, mandatory
+    "account_number": "7722771002", //no special characters allowed
+    "ifsc": "UTIB0CCH274"
+}
+
+Response
+
+{
+    "status": true,
+    "statusCode": 200,
+    "data": {
+        "beneCode": "APIBENEF4405657",
+        "account_holder_name": "Here comes the account holder name as per bank",
+        "beneName": "BulkpePenny3405657",
+        "beneAccNum": "7722771002",
+        "beneIfscCode": "UTIB0CCH274",
+        "transcation_id": "TRAREF0004405656",
+        "reference_id": "TEST122332",
+        "amount": 1,
+        "payment_remark": "From Fintech Private Limited using Bulkpe",
+        "payment_mode": "IMPS",
+        "status": "FAILED",
+        "message": "Successfull"
+    },
+    "message": ""
+}
+
+
+
+
+
+VPA Verification
+
+Use this API to verify any UPI VPA and get the VPA holder name as per bank records.
+
+Request
+
+API URL: 
+https://api.bulkpe.in/client/verify-vpa
+
+Method: 
+POST
+
+Auth: Please refer to the 
+Authorization page
+.
+
+Body
+
+{
+    "vpa": "aintworried@axl",
+    "reference_id": "verify020"
+}
+
+Response
+
+{
+    "status": true,
+    "statusCode": 200,
+    "data": {
+        "account_holder_name": "xxxxx xxxx",
+        "beneAccNum": "aintworried@axl",
+        "transcation_id": "TRAREF0001788235",
+        "reference_id": "verify020",
+        "amount": 0,
+        "payment_mode": "UPI",
+        "status": "SUCCESS",
+        "message": "Transaction Success",
+        "beneName": "BulkpePenny1788236"
+    }
+}
+
+
+
+
+
+
+
+Reverse Penny Drop
+
+Use this API to create a reverse penny drop request. Reverse Penny Drop is a verification method for validating bank account information. Your customers/users deposit 1 rupee through a UPI-based transaction.
+
+Request
+
+API URL: 
+https://api.bulkpe.in/client/reversePennyDrop
+
+Method: 
+POST
+
+Auth: Please refer to the 
+Authorization page
+.
+
+Body
+
+{
+    "reference_id": "Test6",
+    "transcation_note": "TEST Hello"
+}
+
+Response
+
+{
+    "status": true,
+    "statusCode": 200,
+    "data": {
+        "transcation_id": "CHE00016945",
+        "amount": 1,
+        "reference_id": "Test6",
+        "upi": "upi://pay?pa=fcbiznsfkba@freecharge&pn=Bulkpe&mc=8931&tid=CODQR30847441011wb2id45k&tr=CODQR30847441011wb2id45k&am=1.00&cu=INR",
+        "message": "TEST Hello",
+        "status": "SUCCESS"
+    },
+    "message": ""
+}
+
+Webhook
+
+Once the 1 rupee payment is made by the end user, you will receive a callback from Bulkpe. You can configure your callback URL from Bulkpe Dashboard -> Settings -> Webhooks -> Bank Verification.
+
+In the callback, you will get the end user details in the 
+remitter_name
+ param.
+
+{
+  "status": true,
+  "statusCode": 200,
+  "data": {
+    "transcation_id": "TRAREF0002709840",
+    "trx_status": "SUCCESS",
+    "remitter_name": "xxxxxx",
+    "remitter_account_number": "aintworried@axl",
+    "remitter_ifsc": "",
+    "amount": 1,
+    "charge": 2,
+    "gst": 0.36,
+    "settlement_Amount": "1.00",
+    "closing_balance": "13.69",
+    "yetToSettle": "1.00",
+    "type": "Credit",
+    "utr": "328411732404",
+    "payment_mode": "UPI",
+    "payment_remark": "",
+    "createdAt": "2023-10-11T08:56:58.655Z",
+    "reference_id": "Test6"
+  },
+  "message": ""
+}
+
+
+
+Get Name & VPA using Phone No
+
+Use this API to fetch the account holder's name along with the UPI ID (VPA) of the user by providing the phone number.
+
+☝️
+
+Please note
+
+In case no primary VPA is assigned, a failure response is returned.
+
+Request
+
+API URL: 
+https://api.bulkpe.in/client/getVpa
+
+Method: 
+POST
+
+Auth: Please refer to the 
+Authorization page
+.
+
+Body
+
+{
+    "phone": "9790061990",
+    "reference_id": "test01",
+    "transcation_note ": "lets get user name while onboarding" //optional
+}
+
+Response
+
+{
+    "status": true,
+    "statusCode": 200,
+    "data": {
+        "account_holder_name": "xxxxxx",
+        "vpa": "xxxxxx@ybl",
+        "transcation_id": "TETRAREF00012413",
+        "reference_id": "test01",
+        "status": "SUCCESS",
+        "message": "Transaction Success"
+    }
+}
+
+Previous
+Reverse Penny Drop
+Next
+PAN Premium
+
+
+
+
+
+PAN Premium
+
+Use this API to verify and get the PAN holder's details.
+
+Request
+
+API URL: 
+https://api.bulkpe.in/client/verifyPan
+
+Method: 
+POST
+
+Auth: Please refer to the 
+Authorization page
+.
+
+Body
+
+{
+    "pan": "HHRPS6934L"
+}
+
+Response
+
+{
+    "status": true,
+    "statusCode": 200,
+    "data": {
+        "aadhaarLinked": true,
+        "buildingName": "111, User Street Name",
+        "city": "City Name",
+        "dob": "875318400",
+        "email": "",
+        "firstName": "Gavin",
+        "gender": "male",
+        "isPanValid": true,
+        "lastName": "Belson",
+        "locality": "One Road, Silicon Valley",
+        "maskedAadhaar": "XXXXXXXX6685",
+        "middleName": "",
+        "name": "Gavin Belson",
+        "pan": "HSDJD6334L",
+        "panType": "Person",
+        "phone": "",
+        "pinCode": "505357",
+        "state": "TAMIL NADU",
+        "statusCode": 200,
+        "streetName": "SILICON VALLEY H.O"
+    },
+    "message": ""
+}
+
+Previous
+Get Name & VPA using Phone No
+Next
+PAN Lite
+
+
+
+
+
+PAN Lite
+
+Use this API to verify and get the PAN holder's minimal details.
+
+Request
+
+API URL: 
+https://api.bulkpe.in/client/verifyPanLite
+
+Method: 
+POST
+
+Auth: Please refer to the 
+Authorization page
+.
+
+Body
+
+{
+    "pan": "HHXXX6134L"
+}
+
+Response
+
+{
+  "status": true,
+  "statusCode": 200,
+  "data": {
+    "pan": "HHXXX6134L",
+    "type": "Individual",
+    "registered_name": "XXXXXXXX",
+    "valid": true,
+    "message": "PAN verified successfully",
+    "aadhaar_seeding_status": "Y",
+    "last_updated_at": "27/XX/2012",
+    "name_pan_card": "XXXXXXXX  XXXXXXX",
+    "pan_status": "VALID",
+    "aadhaar_seeding_status_desc": "Aadhaar is linked to PAN"
+  },
+  "message": ""
+}
+
+Previous
+PAN Premium
+Next
+Aadhaar OKYC
+
+
+
+
+
+Aadhaar OKYC
+
+Our Aadhaar API simplifies user consent-based verification. Users input their Aadhaar number, receive an OTP on their registered phone, and enter it for validation. The API then provides comprehensive details like name, address, mobile number, age, and date of birth associated with the Aadhaar number, achieving a success rate of over 99% (excluding UIDAI downtime). Streamlining Aadhaar verification, our API enhances accuracy for businesses.
+
+Request (Request OTP)
+
+API URL: 
+https://api.bulkpe.in/client/verifyAadhar
+
+Method: 
+POST
+
+Auth: Please refer to the 
+Authorization page
+.
+
+Body
+
+{
+    "aadhaar": "698736XXXXXX"
+}
+
+Response
+
+{
+    "status": true,
+    "statusCode": 200,
+    "data": {
+        "ref_id": "615XX55",
+        "status": "SUCCESS"
+    },
+    "message": ""
+}
+
+Request (Request OTP Submission)
+
+API URL: 
+https://api.bulkpe.in/client/verifyAadharOtp
+
+Method: 
+POST
+
+Auth: Please refer to the 
+Authorization page
+.
+
+Body
+
+{
+     "ref_id": "615XX55",
+     "otp": "72XXX5"
+}
+
+Response
+
+{
+    "status": true,
+    "statusCode": 200,
+    "data": {
+        "ref_id": "615XX55",
+        "status": "VALID",
+        "care_of": "S/O: XXXXXXXX",
+        "address": "1XX, XXXXXXXXX STREET, locality name, town name, district name, state, pin code",
+        "dob": "2X-0X-19XX",
+        "gender": "M",
+        "name": " XXXXXXX",
+        "split_address": {
+            "country": "India",
+            "dist": "XXXXXXX",
+            "house": "1XX",
+            "landmark": "",
+            "pincode": "000011",
+            "po": "XXXXXXX",
+            "state": "Tamil Nadu",
+            "street": "XXXXXX STREET",
+            "subdist": "XXXXXX",
+            "vtc": "XXXXXX"
+        },
+        "year_of_birth": "19XX",
+        "photo_link": "XXXXXXXX"
+    },
+    "message": ""
+}
+
+Previous
+PAN Lite
+Next
+Verify IFSC
+
+
+
+
+
+Verify IFSC
+
+Use this API to Bank IFS Code.
+
+Request
+
+API URL: 
+https://api.bulkpe.in/client/validateIFSC
+
+Method: 
+POST
+
+Auth: Please refer to the 
+Authorization page
+.
+
+Body
+
+{
+    "ifsc": "HDFC0005411"
+}
+
+Response
+
+{
+    "status": true,
+    "statusCode": 200,
+    "data": {
+        "bankName": "HDFC Bank",
+        "bankBranchName": "DOMBIVALI WEST",
+        "address": "GRD FLOOR SHOP NO 04 YASHRAJ HOMES SUBHASH ROAD KAGDE CHOWK DOMBIVALI WEST KALYAN DOMBIVLI MAHARASHTRA 421202",
+        "cityAndPincode": "THANE",
+        "countryCode": "IN",
+        "networkType": "",
+        "routingNo": "HDFC0005411",
+        "stateCode": "IN-MH"
+    },
+    "message": ""
+}
+
+Previous
+Aadhaar OKYC
+Next
+CRIF Credit Report
+
+
+
+
+
+CRIF Credit Report
+
+Use this API to pull a credit report of a user with consent.
+
+Request
+
+API URL: 
+https://api.bulkpe.in/client/getCreditReport
+
+Method: 
+POST
+
+Auth: Please refer to the 
+Authorization page
+.
+
+Body
+
+{
+    "reference": "Test17836723", //unique value
+    "firstName": "xxxx",
+    "lastName": "xxxxx",
+    "phone": "8888999988", //mandatory param
+    "email": "contact@bulkpe.in", //can be placeholder email address
+    "dob": "25/03/2000",
+    "pan": "HHUTS6234L", //optional
+    "aadhaar": "12867482488246", //optional
+    "toMail": true // true triggers an email to credit holder //optional
+}
+
+If 
+toMail
+ field  as true then the email address given in the request will receive a CRIF credit report.
+
+Response
+
+{
+    "status": true,
+    "statusCode": 200,
+    "data": {
+        "B2C-REPORT": {
+            "HEADER": {
+                "DATE-OF-REQUEST": "XX-XX-XXXX",
+                "PREPARED-FOR": "  ",
+                "PREPARED-FOR-ID": "NBF0004593",
+                "DATE-OF-ISSUE": "XX-XX-XXXX",
+                "REPORT-ID": "CCR240330CR272875765",
+                "BATCH-ID": "2817067723240330",
+                "STATUS": "SUCCESS"
+            },
+            "REQUEST": {
+                "NAME": "aXXXXX sXXXXXXXX",
+                "DOB": "XX-XX-XXXX",
+                "NREGA": "NREGA",
+                "CKYC": "CKYC",
+                "EMAIL-1": "cXXXXX@bXXXXX.in",
+                "ADDRESS-1": "",
+                "ADDRESS-2": "",
+                "ADDRESS-3": "",
+                "PHONE-1": "XXXXXXXX92"
+            },
+            "PERSONAL-INFO-VARIATION": {
+                "NAME-VARIATIONS": [
+                    {
+                        "VARIATION": {
+                            "VALUE": "SXXXXXXXX AXXXXX",
+                            "REPORTED-DATE": "XX-XX-XXXX"
+                        }
+                    }
+                ],
+                "ADDRESS-VARIATIONS": [
+                    {
+                        "VARIATION": {
+                            "VALUE": "51 1  PXXXXXXXXXX SXXXXX TXXXXXXXXX NXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX 6XXXXX 6XXXXX XXX",
+                            "REPORTED-DATE": "XX-XX-XXXX"
+                        }
+                    }
+                ],
+                "PAN-VARIATIONS": [
+                    {
+                        "VARIATION": {
+                            "VALUE": "DXXXXXXXXX",
+                            "REPORTED-DATE": "XX-XX-XXXX"
+                        }
+                    }
+                ],
+                "UID-VARIATIONS": [],
+                "OTHER-ID-VARIATIONS": [],
+                "DRIVING-LICENSE-VARIATIONS": [],
+                "DATE-OF-BIRTH-VARIATIONS": [
+                    {
+                        "VARIATION": {
+                            "VALUE": "XX-XX-XXXX",
+                            "REPORTED-DATE": "XX-XX-XXXX"
+                        }
+                    }
+                ],
+                "VOTER-ID-VARIATIONS": [],
+                "PASSPORT-VARIATIONS": [],
+                "PHONE-NUMBER-VARIATIONS": [
+                    {
+                        "VARIATION": {
+                            "VALUE": "XXXXXXXX92",
+                            "REPORTED-DATE": "XX-XX-XXXX"
+                        }
+                    }
+                ],
+                "RATION-CARD-VARIATIONS": [],
+                "EMAIL-VARIATIONS": []
+            },
+            "SECONDARY-MATCHES": [],
+            "ACCOUNTS-SUMMARY": {
+                "DERIVED-ATTRIBUTES": {
+                    "INQURIES-IN-LAST-SIX-MONTHS": 0,
+                    "LENGTH-OF-CREDIT-HISTORY-YEAR": 0,
+                    "LENGTH-OF-CREDIT-HISTORY-MONTH": 8,
+                    "AVERAGE-ACCOUNT-AGE-YEAR": 0,
+                    "AVERAGE-ACCOUNT-AGE-MONTH": 8,
+                    "NEW-ACCOUNTS-IN-LAST-SIX-MONTHS": 0,
+                    "NEW-DELINQ-ACCOUNT-IN-LAST-SIX-MONTHS": 0
+                },
+                "PRIMARY-ACCOUNTS-SUMMARY": {
+                    "PRIMARY-NUMBER-OF-ACCOUNTS": 2,
+                    "PRIMARY-ACTIVE-NUMBER-OF-ACCOUNTS": 2,
+                    "PRIMARY-OVERDUE-NUMBER-OF-ACCOUNTS": 0,
+                    "PRIMARY-SECURED-NUMBER-OF-ACCOUNTS": 0,
+                    "PRIMARY-UNSECURED-NUMBER-OF-ACCOUNTS": 2,
+                    "PRIMARY-UNTAGGED-NUMBER-OF-ACCOUNTS": 0,
+                    "PRIMARY-CURRENT-BALANCE": "2,248",
+                    "PRIMARY-SANCTIONED-AMOUNT": "25,000",
+                    "PRIMARY-DISBURSED-AMOUNT": "25,000"
+                },
+                "SECONDARY-ACCOUNTS-SUMMARY": {
+                    "SECONDARY-NUMBER-OF-ACCOUNTS": 0,
+                    "SECONDARY-ACTIVE-NUMBER-OF-ACCOUNTS": 0,
+                    "SECONDARY-OVERDUE-NUMBER-OF-ACCOUNTS": 0,
+                    "SECONDARY-SECURED-NUMBER-OF-ACCOUNTS": 0,
+                    "SECONDARY-UNSECURED-NUMBER-OF-ACCOUNTS": 0,
+                    "SECONDARY-UNTAGGED-NUMBER-OF-ACCOUNTS": 0,
+                    "SECONDARY-CURRENT-BALANCE": "0",
+                    "SECONDARY-SANCTIONED-AMOUNT": "0",
+                    "SECONDARY-DISBURSED-AMOUNT": "0"
+                }
+            },
+            "RESPONSES": [
+                {
+                    "RESPONSE": {
+                        "LOAN-DETAILS": {
+                            "ACCT-NUMBER": "NXXXXXXXXXXXXXXXX",
+                            "CREDIT-GUARANTOR": "KXXXXXXXXXXX VXXXXX BXXX",
+                            "ACCT-TYPE": "Consumer Loan",
+                            "DATE-REPORTED": "XX-XX-XXXX",
+                            "OWNERSHIP-IND": "Individual",
+                            "ACCOUNT-STATUS": "Active",
+                            "DISBURSED-AMT": "20,000",
+                            "DISBURSED-DT": "XX-XX-XXXX",
+                            "LAST-PAYMENT-DATE": "XX-XX-XXXX",
+                            "OVERDUE-AMT": "0",
+                            "WRITE-OFF-AMT": "0",
+                            "CURRENT-BAL": "1,798",
+                            "COMBINED-PAYMENT-HISTORY": "Feb:2024,000/STD|Jan:2024,000/STD|Dec:2023,000/STD|Nov:2023,000/STD|Oct:2023,000/STD|Sep:2023,000/STD|Aug:2023,000/STD|Jul:2023,000/STD|Jun:2023,000/STD|",
+                            "MATCHED-TYPE": "PRIMARY",
+                            "LINKED-ACCOUNTS": [],
+                            "SECURITY-DETAILS": [],
+                            "REPAYMENT-TENURE": "0"
+                        }
+                    }
+                },
+                {
+                    "RESPONSE": {
+                        "LOAN-DETAILS": {
+                            "ACCT-NUMBER": "NXXXXXXXXXXXXXXXX",
+                            "CREDIT-GUARANTOR": "CXXXXXXXX FXXXXXXXX SXXXXXXXXXXX PXXXXXXXX LXXXXXXX",
+                            "ACCT-TYPE": "Consumer Loan",
+                            "DATE-REPORTED": "XX-XX-XXXX",
+                            "OWNERSHIP-IND": "Individual",
+                            "ACCOUNT-STATUS": "Active",
+                            "DISBURSED-AMT": "5,000",
+                            "DISBURSED-DT": "XX-XX-XXXX",
+                            "LAST-PAYMENT-DATE": "XX-XX-XXXX",
+                            "OVERDUE-AMT": "0",
+                            "WRITE-OFF-AMT": "0",
+                            "CURRENT-BAL": "450",
+                            "COMBINED-PAYMENT-HISTORY": "Feb:2024,000/STD|Jan:2024,000/STD|Dec:2023,000/STD|Nov:2023,000/STD|Oct:2023,000/STD|Sep:2023,000/STD|Aug:2023,000/STD|Jul:2023,000/STD|Jun:2023,000/STD|",
+                            "MATCHED-TYPE": "PRIMARY",
+                            "LINKED-ACCOUNTS": [],
+                            "SECURITY-DETAILS": [],
+                            "REPAYMENT-TENURE": "0"
+                        }
+                    }
+                }
+            ],
+            "SCORES": [
+                {
+                    "SCORE": {
+                        "SCORE-TYPE": "PXXXXXXXX CXXXXXXXXX 2.0",
+                        "SCORE-VALUE": "XXX",
+                        "SCORE-FACTORS": "SF03|SF11|SF16|SF25|"
+                    }
+                }
+            ],
+            "PRINTABLE-REPORT": {
+                "TYPE": "",
+                "FILE-NAME": "",
+                "CONTENT": ""
+            },
+            "EMPLOYMENT-DETAILS": [
+                {
+                    "EMPLOYMENT-DETAIL": {}
+                }
+            ]
+        }
+    },
+    "message": "Generated"
+}
+
+Previous
+Verify IFSC
+Next
+Upsell Cards and Loans
+
+
+
+
+
+Upsell Cards and Loans
+
+The Upsell Cards and Loans API allows you to generate a redirection URL that you can display within your web or mobile application. This URL enables your customers to apply for loans and credit cards. By using this API, you can seamlessly integrate loan and credit card application functionality into your platform and offer additional financial services to your users.
+
+Request
+
+Endpoint
+
+https://api.bulkpe.in/client/generateReferUrl
+
+Method: 
+POST
+
+Body parameters
+
+{
+    "id": "88763",
+    "name": "xxxxx"
+}
+
+Response
+
+{
+    "status": true,
+    "statusCode": 200,
+    "data": {
+        "id": "88763_1695369994",
+        "url": "https://myteams.co.in/?hash=8ore7hMR8m1vq1agUcUaXe2rljLHsqoap4PchodaQU3xjkgoH3lA8CVluMwRtZC5kG9%2BkWE1lvPfUXuNaG0%2BRw%3D%3D"
+    },
+    "message": ""
+}
+
+Previous
+CRIF Credit Report
+Next
+Axis Bank Current Accounts
+
+
+
+Create current account
+
+This API allows you to generate a personalized link for opening a current account. This API is designed for all types of business. For individual and sole proprietor businesses, you will receive a link to which you can redirect the end user for account opening. For Pvt Ltd, Partnership, LLP, OPC and others, will get personalized physical onboarding experience from the bank.
+
+Endpoint
+
+Request Headers
+
+Request Body
+
+{
+    "businessType": "Individual",
+    "businessName": "Test",
+    "directorName": "Test User",
+    "businessAddress": "TEst Address",
+    "pinCode": "620001",
+    "phone": "9090909090",
+    "email": "test@mail.com",
+    "pan": "AVTPH1234Q"
+}
+
+Allowed Fields
+
+businessType
+
+For 
+businessType
+ "Individual" and "Sole Proprietor," the other parameters are not mandatory.
+
+Response Sample
+
+{
+    "status": true,
+    "statusCode": 200,
+    "data": {
+        "link": "https://supernova.axisbank.com/current-account/?utm_medium=&utm_campaign=&cta=BULKPE_Partner&label=BULKPE&utm_source=&utm_term=&utm_content=113"
+    },
+    "message": ""
+}
+
+
+
+
+
+
+
+
+
+
+
+
+

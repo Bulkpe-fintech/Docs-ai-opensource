@@ -1,0 +1,54 @@
+.rcw-conversation-container > .rcw-header {
+  background-color: rgb(92, 71, 255);
+}
+
+.rcw-response .rcw-message-text {
+  color: rgb(92, 71, 255);
+}
+
+.rcw-client .rcw-message-text {
+  background-color: #f4f7f9;
+  color: black;
+}
+.rcw-conversation-container {
+  width: 100vh;
+  height: 40rem;
+}
+.rcw-messages-container {
+  max-height: fit-content;
+  height: 59vh;
+}
+.rcw-launcher {
+  background-color: rgb(92, 71, 255);
+}
+.rcw-response .rcw-message-text {
+  width: 100%;
+  max-width: 60%;
+}
+.rcw-client .rcw-message-text {
+  background-color: #d8e7ff;
+}
+.rcw-response {
+  width: 100%;
+}
+.rcw-message {
+  margin-left: 40px;
+}
+.rcw-client {
+  margin-right: 40px;
+}
+.rcw-client .rcw-message-text {
+  max-width: 400px;
+}
+.rcw-picker-btn {
+  display: none;
+}
+.rcw-message-text li::marker {
+  margin-top: 20px;
+}
+.preDef {
+  list-style: none;
+  margin-left: 30px;
+  font-family: fangsong;
+  margin-top: 5px;
+}
