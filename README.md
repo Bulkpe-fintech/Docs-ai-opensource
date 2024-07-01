@@ -1,7 +1,7 @@
 # Docs AI by Bulkpe
 
 ## Description
-Docs AI by Bulkpe is a chatbot that allows users to add PDFs, URLs, or Notion pages as sources of knowledge. Users can then ask any query regarding the provided documents.
+Docs AI is a chatbot that allows users to add PDFs, URLs, or Notion pages as sources of knowledge. Users can then ask any query regarding the provided documents.
 
 ## Getting Started
 
