@@ -7,3 +7,4 @@ build
 bundle.main.js
 docs
 .DS_Store
+local.json

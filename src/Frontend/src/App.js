@@ -7,9 +7,6 @@ import { preDefinedQuestions, widgetHeading, widgetDiscription } from "./config"
 
 function App({ profileAvatar = "", title = widgetHeading, subtitle = widgetDiscription }) {
   const [deviceId, setDeviceId] = useState("");
-  const [local, setLocal] = useState(false);
-  const [chat, setChat] = useState([]);
-  const storedChats = localStorage.getItem("chats");
 
   useEffect(() => {
     const initializeDeviceId = () => {
@@ -28,45 +25,26 @@ function App({ profileAvatar = "", title = widgetHeading, subtitle = widgetDiscr
   }, []);
 
   useEffect(() => {
-    const loadChatHistory = async () => {
+    const getChatHistory = async () => {
       try {
         const history = await fetchChatHistory(deviceId);
-        if (history && history.result === "Local") {
-          setLocal(true);
-        }
-        if (history.result) {
-          const chats = history.result.chats;
-          chats.forEach((chat) => {
+        if (history.result != "") {
+          let chats = history.result.chats;
+          for (let chat in chats) {
+            // console.log(chats[chat]);
+            chat = chats[chat];
+
             if (chat.role === "user") addUserMessage(chat.content);
             if (chat.role === "assistant") addResponseMessage(chat.content);
-          });
+          }
         }
       } catch (error) {
         console.error("Error fetching chat history:", error);
       }
-      addPredefinedQuestions();
+      //  addPredefinedQuestions();
     };
-
-    loadChatHistory();
+    getChatHistory();
   }, [deviceId]);
-
-  useEffect(() => {
-    if (local) {
-      console.log("chats", local, storedChats);
-      const parsedChats = JSON.parse(storedChats);
-      setChat(parsedChats);
-      applyHistory(parsedChats);
-    }
-  }, [storedChats, local]);
-
-  const applyHistory = (chatsList) => {
-    if (local) {
-      chatsList.forEach((chat) => {
-        if (chat.role === "user") addUserMessage(chat.content);
-        if (chat.role === "assistant") addResponseMessage(chat.content);
-      });
-    }
-  };
 
   const addPredefinedQuestions = () => {
     const predefinedQuestionsElement = document.getElementById("messages");
@@ -83,28 +61,21 @@ function App({ profileAvatar = "", title = widgetHeading, subtitle = widgetDiscr
 
   const handleNewUserMessage = async (newMessage) => {
     toggleMsgLoader(); // Show loader
-    try {
-      const response = await sendMessage(newMessage, deviceId, local ? chat : "");
-      toggleMsgLoader(); // Hide loader
-      if (!response) {
-        addResponseMessage("Sorry, have some issue with our end.");
-      } else {
-        if (local) {
-          const updatedChat = [...chat, { role: "user", content: newMessage }, { role: "assistant", content: response.result }];
-          if (updatedChat.length >= 50) {
-            updatedChat.shift();
-          }
-          setChat(updatedChat);
-          localStorage.setItem("chats", JSON.stringify(updatedChat));
+    sendMessage(newMessage, deviceId)
+      .then((response) => {
+        // console.log("log", response);
+
+        toggleMsgLoader(); // Hide loader
+        if (!response) {
+          addResponseMessage("Sorry,have some issue with our end.");
         }
         addResponseMessage(response.result);
-      }
-    } catch (error) {
-      toggleMsgLoader(); // Hide loader
-      console.error("Error sending message:", error);
-    }
+      })
+      .catch((error) => {
+        toggleMsgLoader(); // Hide loader
+        console.error("Error sending message:", error);
+      });
   };
-
   const handleListItemClick = (item) => {
     addUserMessage(item);
     handleNewUserMessage(item);
