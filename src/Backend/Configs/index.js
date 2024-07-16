@@ -1,7 +1,7 @@
 module.exports = {
   errorResponse: {
     result: {},
-    message: "Somthing wend wrong",
+    message: "Somthing went wrong",
   },
   successResponse: {
     result: {},
