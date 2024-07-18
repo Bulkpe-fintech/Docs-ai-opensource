@@ -1,12 +1,17 @@
-import React, { useEffect, useState } from "react";
-import { Widget, addResponseMessage, addUserMessage, toggleMsgLoader } from "react-chat-widget";
-import "react-chat-widget/lib/styles.css";
+import React, { useState, useEffect, useRef } from "react";
 import "./App.css";
 import { sendMessage, fetchChatHistory } from "./Request";
-import { preDefinedQuestions, widgetHeading, widgetDiscription } from "./config";
-
-function App({ profileAvatar = "", title = widgetHeading, subtitle = widgetDiscription }) {
+import { widgetHeading, widgetLogo } from "./config";
+import localLogo from "./bulkpe.png";
+const Chatbot = () => {
+  const [messages, setMessages] = useState([]);
+  const [inputValue, setInputValue] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
+  const chatbotMessageWindow = useRef(null);
   const [deviceId, setDeviceId] = useState("");
+
+  const loaderHtml = "<span class='loader'><span class='loader__dot'></span><span class='loader__dot'></span><span class='loader__dot'></span></span>";
+  const errorMessage = "My apologies, I'm not avail at the moment.";
 
   useEffect(() => {
     const initializeDeviceId = () => {
@@ -25,71 +30,149 @@ function App({ profileAvatar = "", title = widgetHeading, subtitle = widgetDiscr
   }, []);
 
   useEffect(() => {
+    const handleKeyPress = (event) => {
+      if (event.which === 13) {
+        validateMessage();
+      }
+    };
+
+    document.addEventListener("keypress", handleKeyPress);
+
+    return () => {
+      document.removeEventListener("keypress", handleKeyPress);
+    };
+  }, [inputValue]);
+
+  const toggleChatbot = () => {
+    setIsOpen(!isOpen);
+    if (!isOpen) {
+      setTimeout(() => document.querySelector(".chatbot__input").focus(), 300);
+      scrollToBottom();
+    }
+  };
+
+  useEffect(() => {
+    if (isOpen) {
+      scrollToBottom();
+    }
+  }, [isOpen]);
+
+  const scrollToBottom = () => {
+    if (chatbotMessageWindow.current) {
+      chatbotMessageWindow.current.scrollTop = chatbotMessageWindow.current.scrollHeight;
+    }
+  };
+
+  useEffect(() => {
     const getChatHistory = async () => {
       try {
         const history = await fetchChatHistory(deviceId);
-        if (history.result != "") {
+        // console.log(history);
+        if (history.result !== "") {
           let chats = history.result.chats;
-          for (let chat in chats) {
-            // console.log(chats[chat]);
-            chat = chats[chat];
-
-            if (chat.role === "user") addUserMessage(chat.content);
-            if (chat.role === "assistant") addResponseMessage(chat.content);
-          }
+          let messagesArray = [];
+          chats.forEach((chat) => {
+            if (chat.role === "user") {
+              messagesArray.push({ type: "user", content: chat.content });
+            } else if (chat.role === "assistant") {
+              messagesArray.push({ type: "ai", content: chat.content });
+            }
+          });
+          setMessages(messagesArray);
+          scrollToBottom();
         }
       } catch (error) {
         console.error("Error fetching chat history:", error);
       }
-      //  addPredefinedQuestions();
     };
-    getChatHistory();
+    if (deviceId) {
+      getChatHistory();
+    }
   }, [deviceId]);
 
-  const addPredefinedQuestions = () => {
-    const predefinedQuestionsElement = document.getElementById("messages");
-    if (predefinedQuestionsElement) {
-      preDefinedQuestions.forEach((item) => {
-        const li = document.createElement("li");
-        li.textContent = item;
-        li.className = "preDef";
-        li.addEventListener("click", () => handleListItemClick(item));
-        predefinedQuestionsElement.appendChild(li);
-      });
-    }
-  };
-
-  const handleNewUserMessage = async (newMessage) => {
-    toggleMsgLoader(); // Show loader
+  const handleNewUserMessage = (newMessage) => {
+    setMessages((prevMessages) => [...prevMessages, { type: "ai", content: loaderHtml, isLoading: true }]);
+    scrollToBottom();
     sendMessage(newMessage, deviceId)
       .then((response) => {
-        // console.log("log", response);
-
-        toggleMsgLoader(); // Hide loader
         if (!response) {
-          addResponseMessage("Sorry,have some issue with our end.");
+          aiMessage(errorMessage, true, 1000);
+        } else {
+          aiMessage(response.result, false, 2000);
         }
-        addResponseMessage(response.result);
       })
       .catch((error) => {
-        toggleMsgLoader(); // Hide loader
+        aiMessage(error.message || errorMessage, false, 2000);
         console.error("Error sending message:", error);
       });
   };
-  const handleListItemClick = (item) => {
-    addUserMessage(item);
-    handleNewUserMessage(item);
-    const elements = document.querySelectorAll(".preDef");
-    elements.forEach((element) => {
-      element.style.display = "none";
-    });
+
+  const userMessage = (content, shouldScroll = true) => {
+    setMessages((prevMessages) => [...prevMessages, { type: "user", content }]);
+    if (shouldScroll) scrollToBottom();
+  };
+
+  const aiMessage = (content, isLoading = false, delay = 0) => {
+    setTimeout(() => {
+      setMessages((prevMessages) => prevMessages.map((message, index) => (index === prevMessages.length - 1 && message.isLoading ? { type: "ai", content, isLoading: false } : message)));
+      scrollToBottom();
+    }, delay);
+  };
+
+  const escapeScript = (unsafe) => {
+    return unsafe.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/\\/g, "&#x5C;").replace(/\s+/g, " ").trim();
+  };
+
+  const validateMessage = () => {
+    const safeText = escapeScript(inputValue);
+    if (safeText.length && safeText !== " ") {
+      resetInputField();
+      userMessage(safeText);
+      handleNewUserMessage(safeText);
+    }
+  };
+
+  const resetInputField = () => {
+    setInputValue("");
   };
 
   return (
-    <div className="App">
-      <Widget handleNewUserMessage={handleNewUserMessage} profileAvatar={profileAvatar} title={title} subtitle={subtitle} resizable={true} senderPlaceHolder="Enter your query..." />
+    <div className={`chatbot ${isOpen ? "" : "chatbot--closed"}`}>
+      <div className="chatbot__header" onClick={toggleChatbot}>
+        <p>
+          <img className="widgetLogo" src={widgetLogo ? widgetLogo : localLogo} alt="Widget Logo" />
+        </p>
+        <p>{isOpen ? widgetHeading : ""}</p>
+        <svg className="chatbot__close-button icon-speech" viewBox="0 0 32 32">
+          <use xlinkHref="#icon-speech" />
+        </svg>
+        <svg className="chatbot__close-button icon-close" viewBox="0 0 32 32">
+          <use xlinkHref="#icon-close" />
+        </svg>
+      </div>
+      <div className="chatbot__message-window" ref={chatbotMessageWindow}>
+        <ul className="chatbot__messages">
+          {messages.map((message, index) => (
+            <li key={index} className={`animation ${message.type === "user" ? "is-user" : "is-ai"}`}>
+              {message.type === "ai" && (
+                <div className="is-ai__profile-picture">
+                  <img className="avatar_logo" src="https://cdn-icons-png.flaticon.com/128/8787/8787632.png" alt="AI Avatar" />
+                </div>
+              )}
+              <span className={`chatbot__arrow ${message.type === "user" ? "chatbot__arrow--right" : "chatbot__arrow--left"}`}></span>
+              <p className="chatbot__message" dangerouslySetInnerHTML={{ __html: message.content }}></p>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div className={`chatbot__entry ${isOpen ? "" : "chatbot--closed"}`}>
+        <input type="text" className="chatbot__input" placeholder="Write a message..." value={inputValue} onChange={(e) => setInputValue(e.target.value)} />
+        <svg className="chatbot__submit" viewBox="0 0 32 32" onClick={validateMessage}>
+          <use xlinkHref="#icon-send" />
+        </svg>
+      </div>
     </div>
   );
-}
+};
 
-export default App;
+export default Chatbot;
