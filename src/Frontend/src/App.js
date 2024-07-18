@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./App.css";
 import { sendMessage, fetchChatHistory } from "./Request";
-import { widgetHeading, widgetLogo } from "./config";
+import { widgetHeading, widgetLogo, botImage, headerFont, chatFont, headerColor, headerfontColor, aiChatColor, userChatColor, chatsFontColor } from "./config";
 import localLogo from "./bulkpe.png";
 const Chatbot = () => {
   const [messages, setMessages] = useState([]);
@@ -138,11 +138,11 @@ const Chatbot = () => {
 
   return (
     <div className={`chatbot ${isOpen ? "" : "chatbot--closed"}`}>
-      <div className="chatbot__header" onClick={toggleChatbot}>
+      <div style={{ background: headerColor ? headerColor : "" }} className="chatbot__header" onClick={toggleChatbot}>
         <p>
           <img className="widgetLogo" src={widgetLogo ? widgetLogo : localLogo} alt="Widget Logo" />
         </p>
-        <p>{isOpen ? widgetHeading : ""}</p>
+        <p style={{ fontFamily: headerFont ? headerFont : "", color: headerfontColor ? headerfontColor : "" }}>{isOpen ? widgetHeading : ""}</p>
         <svg className="chatbot__close-button icon-speech" viewBox="0 0 32 32">
           <use xlinkHref="#icon-speech" />
         </svg>
@@ -151,16 +151,16 @@ const Chatbot = () => {
         </svg>
       </div>
       <div className="chatbot__message-window" ref={chatbotMessageWindow}>
-        <ul className="chatbot__messages">
+        <ul style={{ fontFamily: chatFont ? chatFont : "" }} className="chatbot__messages">
           {messages.map((message, index) => (
-            <li key={index} className={`animation ${message.type === "user" ? "is-user" : "is-ai"}`}>
+            <li style={{ color: chatsFontColor ? chatsFontColor : "" }} key={index} className={`animation ${message.type === "user" ? "is-user" : "is-ai"}`}>
               {message.type === "ai" && (
                 <div className="is-ai__profile-picture">
-                  <img className="avatar_logo" src="https://cdn-icons-png.flaticon.com/128/8787/8787632.png" alt="AI Avatar" />
+                  <img className="avatar_logo" src={botImage ? botImage : "https://cdn-icons-png.flaticon.com/128/8787/8787632.png"} alt="AI " />
                 </div>
               )}
               <span className={`chatbot__arrow ${message.type === "user" ? "chatbot__arrow--right" : "chatbot__arrow--left"}`}></span>
-              <p className="chatbot__message" dangerouslySetInnerHTML={{ __html: message.content }}></p>
+              <p style={{ background: message.type == "user" ? userChatColor : aiChatColor }} className="chatbot__message" dangerouslySetInnerHTML={{ __html: message.content }}></p>
             </li>
           ))}
         </ul>
