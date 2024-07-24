@@ -29,10 +29,10 @@ npm install
 3.	Configure the environment variables by creating a .env file with the following parameters:
 ```sh
 PORT="<your_port>"  optional
-MONGO_DB_URL="<your_mongo_db_url> " optional
+DB="<your_mongo_db_url> " optional
 NOTION_API_KEY="<your_notion_api_key>"  optional
-NOTION_PAGE_ID="<your_notion_page_id>"  optional
-OPEN_API_KEY="<your_open_api_key>" mand
+NOTION_PAGE="<your_notion_page_id>"  optional
+OPENAI_KEY="<your_open_api_key>" mand
 ```
 4.	Run the backend code:
 ```sh
