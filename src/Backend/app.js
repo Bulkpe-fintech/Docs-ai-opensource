@@ -3,7 +3,6 @@ const app = express();
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const mongoose = require("mongoose");
-const morgan = require("morgan");
 const cron = require("./Services/cron");
 const path = require("path");
 const PORT = process.env.PORT || 3000;
@@ -22,7 +21,6 @@ app.use(express.json());
 app.use(bodyParser.text());
 app.use(express.static("public"));
 app.set("trust proxy", true);
-app.use(morgan("dev"));
 app.use(express.static(path.join(__dirname, "../../Frontend/dist")));
 
 app.get("/", (req, res) => {

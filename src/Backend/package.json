@@ -8,7 +8,6 @@
     "express": "^4.19.2",
     "langchain": "^0.1.37",
     "mongoose": "^8.4.4",
-    "morgan": "^1.10.0",
     "node-cron": "^3.0.3",
     "openai": "^4.33.0",
     "react": "^17.0.2",
