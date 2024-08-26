@@ -1,4 +1,4 @@
-# Docs ai open source by Bulkpe
+# Docs AI Open-Source by Bulkpe
 
 ## Description
 Docs AI is a chatbot that allows users to add PDFs, URLs, or Notion pages as sources of knowledge. Users can then ask any query regarding the provided documents.
