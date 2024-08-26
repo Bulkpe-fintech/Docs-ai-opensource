@@ -1,4 +1,4 @@
-# Docs ai open source by Bulkpe
+# Docs AI Open-Source by Bulkpe
 
 ## Description
 
