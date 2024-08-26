@@ -1,7 +1,14 @@
 # Docs AI Open-Source by Bulkpe
 
 ## Description
-Docs AI is a chatbot that allows users to add PDFs, URLs, or Notion pages as sources of knowledge. Users can then ask any query regarding the provided documents.
+Docs AI is an open-source chatbot that enables businesses to seamlessly integrate AI-powered chat functionality into their websites or apps. With Docs AI, you can add PDFs, URLs, or Notion pages as sources of knowledge, allowing end users to ask questions directly related to your provided content. Whether it's for customer support, API documentation, or product guides, Docs AI simplifies the way your users interact with your information.
+
+## Key Features
+- **Notion Integration**: Train your AI chat widget using content from Notion, making it easy to manage and update your knowledge base.
+- **Multi-Source Knowledge Base**: Add PDFs, URLs, and Notion pages to create a comprehensive knowledge base for the AI to reference.
+- **Customizable UI**: Tailor the chat widget to fit the look and feel of your website or app.
+- **Easy Deployment**: Quick setup with detailed instructions for both backend and frontend integration.
+- **Community-Driven**: Open-source and designed for collaboration—contribute, modify, and improve the tool.
 
 ## Getting Started
 
