@@ -8,10 +8,6 @@ module.exports = {
     message: "Success",
   },
   NotionBaseurl: "https://api.notion.com",
-  basePrompt: `
-        -act like a chatbot for my organisation ,Make every answer crisp and clear and profesional,
-        -if dont know the answer make a replay for previous query
-        -dont send unwanted sorry ,please try to replay the query most
-        -please dont replay to the general question`,
+  basePrompt: `Act as a chatbot for my organization. Ensure all responses are crisp, clear, and professional. If you don’t know the answer, review and understand the previous questions and answers, and respond appropriately. Avoid apologizing unnecessarily and focus on providing accurate responses. Do not answer general questions.`,
   urls: [],
 };
